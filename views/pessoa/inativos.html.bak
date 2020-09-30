@@ -1,0 +1,94 @@
+{{extend 'layout.html'}}
+{{totaldebito=0}}
+{{total=0}}
+<h3>
+    Todos Endossante (Pai do Cheque)
+</h3>
+<div class="py-5">
+    <div class="container">
+      <div class="row" id="noprint">
+        <form class="form-inline col-12">
+          <a class="btn btn-link col-sm-3" href="{{=URL('default','index')}}" style="color:#3b5998" >
+              <i class="fa fa-fw fa-1x py-1 fa-arrow-left"></i>
+              Voltar
+            </a>
+          <a class="btn btn-link col-sm-3" href="{{=URL('cadastro_pessoa')}}" style="color:#3b5998" >
+              <i class="fa fa-fw fa-1x py-1 fa-plus-square"></i>
+              Cadastrar Pessoa
+            </a>
+          <div class="input-group col-sm-6">
+            <input type="text" class="form-control" name="busca" placeholder="Buscar" id="input">
+            <div class="input-group-append"><button class="btn btn-primary button" type="button"><i class="fa fa-search"></i></button></div>
+          </div>
+        </form>
+      </div>
+        <br>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nome</th>
+                  <th>Telefone</th>
+                  <th>Total</th>
+                  <th>Débito</th>
+                  <th id="noprint">
+                    <center>Opções</center>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                  {{for row in rows:}}
+                <tr>
+                    {{ if row.ativo:}}
+                  <th>Ativo</th>
+                    {{else:}}
+                  <th>Inativo</th>
+                    
+                    {{pass}}
+                  <td>{{=row.nome}}</td>
+                  <td>{{=row.telefone}}</td>
+                  <td>R$ {{="{:,}".format(round(row.total,1)).replace(",",".")}}0</td>
+                  <td>R$ {{="{:,}".format(round(row.debito,1)).replace(",",".")}}0</td>
+                    {{totaldebito+=row.debito}}
+                    {{total+=row.total}}
+                  <td id="noprint">
+                    <center><a class="btn btn-link" style="color:#3b5998"  href="{{=URL('cheque','acesso', args=row.id)}}"><i class="fa fa-fw fa-1x py-1 fa-clipboard"></i> Acessar</a>
+                    </center>
+                  </td>
+                </tr>
+                  {{pass}}
+                  <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>R$ {{="{:,}".format(round(total,1)).replace(",",".")}}0</td>
+                      <td>R$ {{="{:,}".format(round(totaldebito,1)).replace(",",".")}}0</td>
+                      <td></td>
+                  </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+    var inputElement = document.querySelector('input[name=busca]');
+    var btnElement = document.querySelector('button.button');
+
+    btnElement.onclick = function(){
+        var busca= inputElement.value;
+        window.location.href = "{{=URL('index')}}"+"/"+busca
+    };
+
+    $("#input").on("keypress", function(e) {
+        if (e.which == 13){
+            var busca= inputElement.value;
+            alert("{{=URL('index')}}"+"/"+busca);
+            window.location.href = "{{=URL('index')}}"+"/"+busca
+        }
+    })
+</script>

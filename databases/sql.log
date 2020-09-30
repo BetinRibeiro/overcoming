@@ -1,0 +1,140 @@
+timestamp: 2020-08-10T12:45:00.017327
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "first_name" CHAR(128),
+    "last_name" CHAR(128),
+    "email" CHAR(512),
+    "password" CHAR(512),
+    "registration_key" CHAR(512),
+    "reset_password_key" CHAR(512),
+    "registration_id" CHAR(512)
+);
+success!
+timestamp: 2020-08-10T12:45:00.330949
+CREATE TABLE "auth_group"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "role" CHAR(512),
+    "description" TEXT
+);
+success!
+timestamp: 2020-08-10T12:45:00.485530
+CREATE TABLE "auth_membership"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "group_id" INTEGER REFERENCES "auth_group" ("id") ON DELETE CASCADE  
+);
+success!
+timestamp: 2020-08-10T12:45:00.546914
+CREATE TABLE "auth_permission"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "group_id" INTEGER REFERENCES "auth_group" ("id") ON DELETE CASCADE  ,
+    "name" CHAR(512),
+    "table_name" CHAR(512),
+    "record_id" INTEGER
+);
+success!
+timestamp: 2020-08-10T12:45:00.607048
+CREATE TABLE "auth_event"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "time_stamp" TIMESTAMP,
+    "client_ip" CHAR(512),
+    "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "origin" CHAR(512),
+    "description" TEXT
+);
+success!
+timestamp: 2020-08-10T12:45:00.671657
+CREATE TABLE "auth_cas"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "created_on" TIMESTAMP,
+    "service" CHAR(512),
+    "ticket" CHAR(512),
+    "renew" CHAR(1)
+);
+success!
+timestamp: 2020-08-10T12:56:17.255475
+CREATE TABLE "pessoa"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "nome" CHAR(512),
+    "telefone" CHAR(512),
+    "descricao" TEXT
+);
+success!
+timestamp: 2020-08-10T14:59:30.426036
+CREATE TABLE "cheque"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "pessoa" INTEGER REFERENCES "pessoa" ("id") ON DELETE CASCADE  ,
+    "data_vencimento" DATE,
+    "banco" CHAR(512),
+    "agencia" CHAR(512),
+    "conta" CHAR(512),
+    "nome" CHAR(512),
+    "telefone" CHAR(512),
+    "valor" DOUBLE NOT NULL DEFAULT 0.0,
+    "obs" TEXT,
+    "debito" DOUBLE NOT NULL DEFAULT 0.0,
+    "quitado" CHAR(1)
+);
+success!
+timestamp: 2020-08-10T15:28:13.178088
+CREATE TABLE "recebimento"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "pessoa" INTEGER REFERENCES "pessoa" ("id") ON DELETE CASCADE  ,
+    "cheque" INTEGER REFERENCES "cheque" ("id") ON DELETE CASCADE  ,
+    "data_recebimento" DATE,
+    "descricao" CHAR(512),
+    "valor" DOUBLE NOT NULL DEFAULT 0.0,
+    "juro" DOUBLE NOT NULL DEFAULT 0.0,
+    "obs" TEXT
+);
+success!
+timestamp: 2020-08-11T17:14:06.406588
+ALTER TABLE "pessoa" ADD "debito" DOUBLE NOT NULL DEFAULT 0.0;
+success!
+timestamp: 2020-08-11T17:37:52.588857
+ALTER TABLE "cheque" ADD "numero" CHAR(512);
+success!
+timestamp: 2020-08-11T19:29:45.135178
+ALTER TABLE "recebimento" ADD "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2020-08-11T19:29:45.193979
+ALTER TABLE "recebimento" ADD "is_active" CHAR(1);
+timestamp: 2020-08-11T19:29:45.245143
+ALTER TABLE "recebimento" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2020-08-11T19:29:45.301953
+ALTER TABLE "recebimento" ADD "created_on" TIMESTAMP;
+timestamp: 2020-08-11T19:29:45.378183
+ALTER TABLE "recebimento" ADD "modified_on" TIMESTAMP;
+success!
+timestamp: 2020-08-13T23:58:23.410353
+ALTER TABLE "pessoa" ADD "ativo" CHAR(1);
+success!
+success!
+timestamp: 2020-08-14T00:07:41.550679
+ALTER TABLE "pessoa" ADD "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2020-08-14T00:07:41.625947
+ALTER TABLE "pessoa" ADD "is_active" CHAR(1);
+timestamp: 2020-08-14T00:07:41.673031
+ALTER TABLE "pessoa" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2020-08-14T00:07:41.707354
+ALTER TABLE "pessoa" ADD "created_on" TIMESTAMP;
+timestamp: 2020-08-14T00:07:41.766714
+ALTER TABLE "pessoa" ADD "modified_on" TIMESTAMP;
+success!
+timestamp: 2020-08-14T00:07:42.227569
+ALTER TABLE "cheque" ADD "modified_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2020-08-14T00:07:42.314069
+ALTER TABLE "cheque" ADD "is_active" CHAR(1);
+timestamp: 2020-08-14T00:07:42.410072
+ALTER TABLE "cheque" ADD "created_on" TIMESTAMP;
+timestamp: 2020-08-14T00:07:42.437333
+ALTER TABLE "cheque" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+timestamp: 2020-08-14T00:07:42.547505
+ALTER TABLE "cheque" ADD "modified_on" TIMESTAMP;
+success!
+timestamp: 2020-08-14T14:56:22.535532
+ALTER TABLE "pessoa" ADD "total" DOUBLE NOT NULL DEFAULT 0.0;
+success!
+timestamp: 2020-08-21T22:33:45.560703
+ALTER TABLE "recebimento" ADD "conferido" CHAR(1);
+success!

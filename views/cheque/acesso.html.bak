@@ -1,0 +1,89 @@
+{{extend 'layout.html'}}
+{{debito=0}}
+{{totaldebito=0}}
+                  {{total=0}}
+<h3>
+    Cheques de {{=pessoa.nome}}
+</h3>
+<div class="py-5" >
+    <div class="container">
+      <div class="row" id="noprint">
+        <form class="form-inline col-12">
+          <a class="btn btn-link col-sm-2" href="{{=URL('pessoa','index')}}" style="color:#3b5998">
+            <i class="fa fa-fw fa-1x py-1 fa-arrow-left"></i> Voltar </a>
+          <a class="btn btn-link col-sm-3" href="{{=URL('cheque','cadastrar', args=pessoa.id)}}" style="color:#3b5998" ><i class="fa fa-fw fa-1x py-1 fa-plus-square"></i> Cadastrar Cheque Novo</a>
+          <a class="btn btn-link col-sm-3" href="{{=URL('cheque','alterar_pessoa', args=pessoa.id)}}" style="color:#3b5998" ><i class="fa fa-fw fa-1x py-1 fa-cog"></i> Alterar Dados do Pai do cheque</a>
+          <div class="input-group col-sm-6">
+          </div>
+        </form>
+        </div>
+          <br>
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="border border-dark"><hr>
+            <li><b>Nome:</b> {{=pessoa.nome}}</li><hr>
+            <li><b>Telefone:</b> {{=pessoa.telefone}}</li><hr>
+            <li><b>Descrição:</b> {{=pessoa.descricao}}</li><hr>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+            
+          <div class="table-responsive">
+            <table class="table table-striped table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Data</th>
+                  <th scope="col">Nome Cheque</th>
+                  <th scope="col">Valor</th>
+                  <th scope="col">Débito</th>
+                  <th scope="col" class="text-center" id="noprint">Opções</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {{for row in rows:}}
+                  {{if row.debito>0:}}
+                <tr>
+                  <th scope="row">{{=("{}/{}/{}".format(row.data_vencimento.day,row.data_vencimento.month,row.data_vencimento.year))}}
+                  </th>
+                  <td>{{=row.nome}}</td>
+                  <td>R$ {{="{:,}".format(round(row.valor,1)).replace(",",".")}}0</td>
+                    {{debito+=row.debito}}
+                  <td>R$ {{="{:,}".format(round(row.debito,1)).replace(",",".")}}0</td>
+                  <td class="text-center" id="noprint"><a class="btn btn-link" href="{{=URL('acesso_recebimentos', args=row.id)}}" style="color:#3b5998" ><i class="fa fa-fw fa-1x py-1 text-center fa-cog"></i> </a></td>
+                </tr>
+                  {{totaldebito+=row.debito}}
+                  {{total+=row.valor}}
+                  {{elif row.debito==0:}}
+                  {{else:}}
+                   <tr class="table-danger">
+                  <th scope="row">{{=("{}/{}/{}".format(row.data_vencimento.day,row.data_vencimento.month,row.data_vencimento.year))}}
+                  </th>
+                  <td>{{=row.nome}}</td>
+                  <td>R$ {{="{:,}".format(round(row.valor,1)).replace(",",".")}}0</td>
+                    {{debito+=row.debito}}
+                  <td>ERRO!!</td>
+                  <td class="text-center" id="noprint"><a class="btn btn-link" href="{{=URL('acesso_recebimentos', args=row.id)}}" style="color:#ff1a1a" ><i class="fa fa-fw fa-1x py-1 text-center fa-cog"></i> </a></td>
+                </tr>
+                  {{pass}}
+                  {{pass}}
+                  <tr>
+                      <td></td>
+                      <td>Total - ></td>
+                      <th>R$ {{="{:,}".format(round(total,1)).replace(",",".")}}0</th>
+                      <th>R$ {{="{:,}".format(round(totaldebito,1)).replace(",",".")}}0</th>
+                      <td></td>
+                      <td></td>
+                  </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{{pessoa.total=total}}
+{{pessoa.debito=debito}}
+{{pessoa.update_record()}}

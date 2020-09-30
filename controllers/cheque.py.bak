@@ -1,0 +1,154 @@
+# -*- coding: utf-8 -*-
+@auth.requires_login()
+def index():
+    data=request.now.year
+    ano=request.now.month
+    mes=request.args(0, cast=int)
+    ano=request.args(1, cast=int)
+    primeira_data=datetime.date(ano, mes, 1)
+    ultima_data=datetime.date(ano, mes, 1)
+
+    if (mes==12):
+        ultima_data=datetime.date(ano+1, 1, 1)
+    else:
+        ultima_data=datetime.date(ano, mes+1, 1)
+    rows = db((db.cheque.data_vencimento>=primeira_data)&(db.cheque.data_vencimento<ultima_data)).select(orderby=db.cheque.data_vencimento)
+    return locals()
+
+@auth.requires_login()
+def ver_cheque():
+    cheque = db.cheque(request.args(0, cast=int))
+    rows = db((db.recebimento.cheque==cheque.id)).select(orderby=db.recebimento.data_recebimento)
+    return locals()
+
+@auth.requires_login()
+def acesso():
+    pessoa = db.pessoa(request.args(0, cast=int))
+    rows = db((db.cheque.pessoa==(request.args(0)))).select(orderby=db.cheque.data_vencimento)
+    return locals()
+
+@auth.requires_login()
+def acesso_recebimentos():
+    n=auth.user.id
+    cheque = db.cheque(request.args(0, cast=int))
+    rows = db((db.recebimento.cheque==cheque.id)).select(orderby=db.recebimento.data_recebimento)
+    return locals()
+@auth.requires_login()
+def cadastrar():
+    response.view = 'generic.html'
+    pessoa = db.pessoa(request.args(0, auth.user))
+    db.cheque.pessoa.default = pessoa.id
+    db.cheque.pessoa.writable = False
+    form = SQLFORM(db.cheque).process()
+    if form.accepted:
+        #caso aceito redireciona para tela de acesso inicial
+        response.flash = 'Formulario aceito'
+        redirect(URL('acesso_recebimentos', args=[form.vars.id]))
+    elif form.errors:
+        response.flash = 'Formulario não aceito'
+    else:
+        response.flash = 'Preencha o formulario'
+    #2 consultas no banco
+    return  dict(form=form)
+
+@auth.requires_login()
+def alterar_pessoa():
+    response.view = 'generic.html' # use a generic view
+    pessoa = db.pessoa(request.args(0, cast=int))
+
+    db.pessoa.id.readable = False
+    db.pessoa.id.writable = False
+    n=auth.user.id
+    if n!=1 or n!=6:
+        db.pessoa.nome.readable = True
+        db.pessoa.nome.writable = False
+    form = SQLFORM(db.pessoa, request.args(0, cast=int), deletable=False)
+    if form.process().accepted:
+        session.flash = 'Atualizado'
+        redirect(URL('acesso', args=pessoa.id))
+    elif form.errors:
+        response.flash = 'Erros no formulário!'
+    else:
+        if not response.flash:
+            response.flash = 'Preencha o formulário!'
+    return dict(form=form)
+
+@auth.requires_login()
+@auth.requires_membership('admin')
+def alterar_cheque():
+    response.view = 'generic.html' # use a generic view
+    cheque = db.cheque(request.args(0, cast=int))
+    db.cheque.id.readable = False
+    db.cheque.id.writable = False
+    form = SQLFORM(db.cheque, request.args(0, cast=int), deletable=True)
+    if form.process().accepted:
+        session.flash = 'Atualizado'
+        redirect(URL('acesso', args=cheque.pessoa))
+    elif form.errors:
+        response.flash = 'Erros no formulário!'
+    else:
+        if not response.flash:
+            response.flash = 'Preencha o formulário!'
+    return dict(form=form)
+
+@auth.requires_login()
+def cadastrar_recebimento():
+    response.view = 'generic.html'
+    cheque = db.cheque(request.args(0, auth.user))
+    pessoa = db.pessoa(cheque.pessoa)
+    db.recebimento.pessoa.default = pessoa.id
+    db.recebimento.pessoa.writable = False
+    db.recebimento.cheque.default = cheque.id
+    db.recebimento.cheque.writable = False
+    form = SQLFORM(db.recebimento).process()
+    if form.accepted:
+        #caso aceito redireciona para tela de acesso inicial
+        response.flash = 'Formulario aceito'
+        redirect(URL('acesso_recebimentos', args=(request.args(0, auth.user))))
+    elif form.errors:
+        response.flash = 'Formulario não aceito'
+    else:
+        response.flash = 'Preencha o formulario'
+    #2 consultas no banco
+    return  dict(form=form)
+
+@auth.requires_login()
+@auth.requires_membership('admin')
+def alterar_recebimento():
+    response.view = 'generic.html' # use a generic view
+    recebimento = db.recebimento(request.args(0, cast=int))
+    db.recebimento.id.readable = False
+    db.recebimento.id.writable = False
+    form = SQLFORM(db.recebimento, request.args(0, cast=int), deletable=True)
+    if form.process().accepted:
+        session.flash = 'Atualizado'
+        redirect(URL('acesso_recebimentos', args=recebimento.cheque))
+    elif form.errors:
+        response.flash = 'Erros no formulário!'
+    else:
+        if not response.flash:
+            response.flash = 'Preencha o formulário!'
+    return dict(form=form)
+
+@auth.requires_login()
+def ver_recebimento():
+    response.view = 'generic.html' # use a generic view
+    recebimento = db.recebimento(request.args(0, cast=int))
+    db.recebimento.id.readable = False
+    db.recebimento.id.writable = False
+    
+    db.recebimento.valor.readable = True
+    db.recebimento.valor.writable = False
+    
+    db.recebimento.juro.readable = True
+    db.recebimento.juro.writable = False
+    form = SQLFORM(db.recebimento, request.args(0, cast=int), editable=False)
+    if form.process().accepted:
+        session.flash = 'Atualizado'
+        redirect(URL('acesso_recebimentos', args=recebimento.cheque))
+    elif form.errors:
+        response.flash = 'Erros no formulário!'
+    else:
+        if not response.flash:
+            response.flash = 'Preencha o formulário!'
+    return dict(form=form)
