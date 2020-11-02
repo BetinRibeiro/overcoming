@@ -55,14 +55,14 @@
                 </tr>
                   {{totaldebito+=row.debito}}
                   {{total+=row.valor}}
-                  {{elif row.debito==0:}}
+                  {{elif (row.debito>-1) and (not row.debito>1):}}
                   {{else:}}
                    <tr class="table-danger">
                   <th scope="row">{{=("{}/{}/{}".format(row.data_vencimento.day,row.data_vencimento.month,row.data_vencimento.year))}}
                   </th>
                   <td>{{=row.nome}}</td>
                   <td>R$ {{="{:,}".format(round(row.valor,1)).replace(",",".")}}0</td>
-                    {{debito+=row.debito}}
+                   
                   <td>ERRO!!</td>
                   <td class="text-center" id="noprint"><a class="btn btn-link" href="{{=URL('acesso_recebimentos', args=row.id)}}" style="color:#ff1a1a" ><i class="fa fa-fw fa-1x py-1 text-center fa-cog"></i> </a></td>
                 </tr>

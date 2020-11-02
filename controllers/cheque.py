@@ -137,12 +137,19 @@ def ver_recebimento():
     recebimento = db.recebimento(request.args(0, cast=int))
     db.recebimento.id.readable = False
     db.recebimento.id.writable = False
-    
-    db.recebimento.valor.readable = True
-    db.recebimento.valor.writable = False
-    
-    db.recebimento.juro.readable = True
-    db.recebimento.juro.writable = False
+    if not recebimento.conferido:
+      
+      db.recebimento.valor.readable = True
+      db.recebimento.valor.writable = True
+
+      db.recebimento.juro.readable = True
+      db.recebimento.juro.writable = True
+    else:
+      db.recebimento.valor.readable = True
+      db.recebimento.valor.writable = False
+
+      db.recebimento.juro.readable = True
+      db.recebimento.juro.writable = False
     form = SQLFORM(db.recebimento, request.args(0, cast=int), editable=False)
     if form.process().accepted:
         session.flash = 'Atualizado'

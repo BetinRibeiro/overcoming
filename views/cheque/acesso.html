@@ -43,7 +43,7 @@
               </thead>
               <tbody>
                   {{for row in rows:}}
-                  {{if row.debito>0:}}
+                  {{if row.debito>1:}}
                 <tr>
                   <th scope="row">{{=("{}/{}/{}".format(row.data_vencimento.day,row.data_vencimento.month,row.data_vencimento.year))}}
                   </th>
@@ -55,7 +55,7 @@
                 </tr>
                   {{totaldebito+=row.debito}}
                   {{total+=row.valor}}
-                  {{elif row.debito==0:}}
+                  {{elif (row.debito>-1) and (not row.debito>1):}}
                   {{else:}}
                    <tr class="table-danger">
                   <th scope="row">{{=("{}/{}/{}".format(row.data_vencimento.day,row.data_vencimento.month,row.data_vencimento.year))}}

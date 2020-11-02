@@ -32,6 +32,7 @@ def alterar_conferencia():
     redirect(URL('index', args=[recebimento.data_recebimento.month,recebimento.data_recebimento.year]))
     return locals()
 
+@auth.requires_login()
 def alterar_recebimento():
     response.view = 'generic.html' # use a generic view
     recebimento = db.recebimento(request.args(0, cast=int))

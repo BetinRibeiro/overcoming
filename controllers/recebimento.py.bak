@@ -41,7 +41,7 @@ def alterar_recebimento():
     form = SQLFORM(db.recebimento, request.args(0, cast=int), deletable=True)
     if form.process().accepted:
         session.flash = 'Atualizado'
-        redirect(URL('ver_cheque', args=cheque.id))
+        redirect(URL('ver_cheque', args=recebimento.id))
     elif form.errors:
         response.flash = 'Erros no formulário!'
     else:
