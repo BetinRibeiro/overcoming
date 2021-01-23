@@ -163,6 +163,7 @@
 'Overview': 'Visão Geral',
 'Pai do Cheque': 'Pai do Cheque',
 'Password': 'Senha',
+'Password changed': 'Password changed',
 'Permission': 'Permission',
 'Permissions': 'Permissions',
 'Plugins': 'Plugins',
